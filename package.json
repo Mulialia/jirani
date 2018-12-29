@@ -7,8 +7,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "node test.js"
+    "start": "node index.js"
   },
   "keywords": [
     "node",
@@ -19,8 +18,8 @@
   "author": "BlackStar Media",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.3",
-    "socket.io": "^2.1.1"
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0"
   },
   "repository": {
     "type": "git",
