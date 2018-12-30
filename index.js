@@ -7,52 +7,9 @@ app.get('/',function(req, res){
     res.sendFile(__dirname+'/index.html');
 })
 
-// io.on('connection', onConnect);
-//
-// function onConnect(socket){
-//   console.log("Something is happening");
-//   console.log('one user connected : '+socket.id);
-//   socket.broadcast.emit('message',{message:{"text":"Someone has come in", "sender":"Admin"}});
-//   socket.on('message', function(data){
-//     socket.broadcast.emit('message',{message:data});
-//     console.log(data);
-//     // var sockets = Object.keys(io.sockets.sockets);
-//     //     sockets.forEach(function(sock){
-//     //         if (sock != socket.id){
-//     //             io.to(sock).emit('message',{message:data});
-//     //         }
-//     //         console.log("Sent to ID:",socket.id);
-//     //     })
-//   })
-//   socket.on('disconnect',function () {
-//         console.log('one user disconnected '+socket.id);
-//         socket.broadcast.emit('message',{message:{"text":"Someone has left us", "sender":"Admin"}});
-//     })
-// };
-
-// function onConnect(socket){
-//     console.log('one user connected : '+socket.id);
-//     socket.on('message',function (data) {
-//         console.log(data);
-//         var sockets = Object.keys(io.sockets.sockets);
-//         // var sockets = io.sockets.sockets;
-//         sockets.forEach(function(sock){
-//             if (sock != socket.id){
-//                 io.to(sock).emit('message',{message:data});
-//             }
-//             console.log("Sent to ID:",socket.id);
-//         })
-//     })
-//     socket.on('disconnect',function () {
-//         console.log('one user disconnected '+socket.id);
-//     })
-// };
-
 http.listen(PORT,function(){
     console.log('Server listening on port '+PORT);
 })
-
-
 
 // usernames which are currently connected to the chat
 var usernames = {};
@@ -65,13 +22,6 @@ io.sockets.on('connection', function (socket) {
   socket.on('message', function(data){
       socket.broadcast.emit('message',{message:data});
       console.log(data);
-      // var sockets = Object.keys(io.sockets.sockets);
-      //     sockets.forEach(function(sock){
-      //         if (sock != socket.id){
-      //             io.to(sock).emit('message',{message:data});
-      //         }
-      //         console.log("Sent to ID:",socket.id);
-      //     })
     });
 
 	// when the client emits 'adduser', this listens and executes
@@ -90,43 +40,44 @@ io.sockets.on('connection', function (socket) {
 		// send client to room 1
 		socket.join(roomname);
 		// echo to client they've connected
-		// socket.emit('updatechat', 'SERVER', 'you have connected to room1');
-    console.log('updatechat', 'SERVER', 'you have connected to '+roomname);
-		// // echo to room 1 that a person has connected to their room
-		// socket.broadcast.to('room1').emit('updatechat', 'SERVER', username + ' has connected to this room');
-		// socket.emit('updaterooms', rooms, 'room1');
+    data.text = 'you have connected to '+roomname;
+    data.sender = 'SERVER';
+		socket.emit('message',{message:data});
+		console.log('updatechat',data);
+		// echo to room 1 that a person has connected to their room
+		// socket.broadcast.to(roomname).emit('updatechat', 'SERVER', username + ' has connected to this room');
+		// socket.emit('updaterooms', rooms, roomname);
+    console.log('updaterooms', rooms, roomname);
 	});
 
-	// // when the client emits 'sendchat', this listens and executes
-	// socket.on('sendchat', function (data) {
-	// 	// we tell the client to execute 'updatechat' with 2 parameters
-	// 	io.sockets.in(socket.room).emit('updatechat', socket.username, data);
-	// });
-  //
-	// socket.on('switchRoom', function(newroom){
-	// 	// leave the current room (stored in session)
-	// 	socket.leave(socket.room);
-	// 	// join new room, received as function parameter
-	// 	socket.join(newroom);
-	// 	socket.emit('updatechat', 'SERVER', 'you have connected to '+ newroom);
-	// 	// sent message to OLD room
-	// 	socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room');
-	// 	// update socket session room title
-	// 	socket.room = newroom;
-	// 	socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room');
-	// 	socket.emit('updaterooms', rooms, newroom);
-	// });
+	// when the client emits 'sendchat', this listens and executes
+	socket.on('sendchat', function (data) {
+		// we tell the client to execute 'updatechat' with 2 parameters
+		io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+	});
+
+	socket.on('switchRoom', function(newroom){
+		// leave the current room (stored in session)
+		socket.leave(socket.room);
+		// join new room, received as function parameter
+		socket.join(newroom);
+		socket.emit('updatechat', 'SERVER', 'you have connected to '+ newroom);
+		// sent message to OLD room
+		socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room');
+		// update socket session room title
+		socket.room = newroom;
+		socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room');
+		socket.emit('updaterooms', rooms, newroom);
+	});
 
 	// when the user disconnects.. perform this
 	socket.on('disconnect', function(){
 		// remove the username from global usernames list
 		delete usernames[socket.username];
-    delete rooms[socket.roomname];
 		// update list of users in chat, client-side
-		// io.sockets.emit('updateusers', usernames);
+		io.sockets.emit('updateusers', usernames);
 		// echo globally that this client has left
-		// socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-    console.log('updatechat', 'SERVER', socket.username + ' has disconnected');
-		socket.leave(socket.roomname);
+		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+		socket.leave(socket.room);
 	});
 });
