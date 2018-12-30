@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A backend API for the Jirani Chat app...",
   "engines": {
-    "node": "10.x"
+    "node": "6.2.0"
   },
   "main": "index.js",
   "scripts": {
@@ -18,8 +18,8 @@
   "author": "BlackStar Media",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
-    "socket.io": "^2.2.0"
+    "express": "4.13.4",
+    "socket.io": "1.4.6"
   },
   "repository": {
     "type": "git",
