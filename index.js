@@ -2,13 +2,16 @@ const app = require('express')();
 const http = require('http').createServer(app);
 // const io = require('socket.io').listen(http);
 const PORT = process.env.PORT || 3000;
+const date = (new Date());
+const time = ""+date.getFullYear()+"-"+date.getMonth()+
+"-"+date.getDate()+"-"+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 
 app.get('/',function(req, res){
     res.sendFile(__dirname+'/index.html');
 })
 
 http.listen(PORT,function(){
-    console.log('Server listening on port '+PORT);
+    console.log(time+' : Server listening on port '+PORT);
 })
 
 // // usernames which are currently connected to the chat
