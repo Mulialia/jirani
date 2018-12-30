@@ -1,6 +1,6 @@
 const app = require('express')();
 const http = require('http').createServer(app);
-// const io = require('socket.io').listen(http);
+const io = require('socket.io').listen(http);
 const PORT = process.env.PORT || 3000;
 const date = (new Date());
 const time = ""+date.getFullYear()+"-"+date.getMonth()+
