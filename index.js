@@ -54,6 +54,8 @@ io.on('connection', (socket) => {
 	socket.on('sendchat', function (data) {
 		// we tell the client to execute 'updatechat' with 2 parameters
     socket.broadcast.to(roomname).emit('receivechat',{message:data});
+    console.log("The data sent is: "+data);
+
 		// io.sockets.in(socket.room).emit('updatechat', socket.username, data);
 	});
 
