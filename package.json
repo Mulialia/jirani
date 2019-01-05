@@ -18,8 +18,8 @@
   "author": "BlackStar Media",
   "license": "ISC",
   "dependencies": {
-    "express": "4.13.4",
-    "socket.io": "1.4.6"
+    "express": "*",
+    "socket.io": "*"
   },
   "repository": {
     "type": "git",
